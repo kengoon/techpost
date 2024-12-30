@@ -41,9 +41,12 @@ describe("write post function test", () => {
         Cl.stringUtf8("Clarity is an oblee blockchain, you can't tell me otherwise")],
         address2
       )
-    ])
+    ]);
 
     const totalPost = simnet.callReadOnlyFn("techpost", "get-total-post", [], deployer);
     expect(totalPost.result).toBeUint(2);
+
+    const getPost = simnet.callReadOnlyFn("techpost", "get-post", [Cl.principal(address1)], address1);
+    expect(getPost.result.value).toBeUtf8("Oblee is a tech event, quote me wrong");
   })
 })
