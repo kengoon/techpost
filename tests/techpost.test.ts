@@ -1,4 +1,5 @@
 
+import { tx } from "@hirosystems/clarinet-sdk";
 import { Cl } from "@stacks/transactions";
 import { describe, expect, it } from "vitest";
 
@@ -25,7 +26,24 @@ describe("example tests", () => {
 
 describe("get-total-post function test", () => {
   it("get's the total tech post made", () => {
-    const { result } = simnet.callReadOnlyFn("techpost", "get-total-post", [], address1)
-    expect(result).toBeUint(0)
+    const { result } = simnet.callReadOnlyFn("techpost", "get-total-post", [], deployer);
+    expect(result).toBeUint(0);
+  })
+})
+
+describe("write post function test", () => {
+  it("writes a post in the blockchai", () => {
+    const [ block ] = simnet.mineBlock([
+      tx.callPublicFn("techpost", "write-post", [
+        Cl.stringUtf8("Oblee is a tech event, quote me wrong")], address1
+      ),
+      tx.callPublicFn("techpost", "write-post", [
+        Cl.stringUtf8("Clarity is an oblee blockchain, you can't tell me otherwise")],
+        address2
+      )
+    ])
+
+    const totalPost = simnet.callReadOnlyFn("techpost", "get-total-post", [], deployer);
+    expect(totalPost.result).toBeUint(2);
   })
 })
